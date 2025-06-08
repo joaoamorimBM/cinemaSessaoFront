@@ -1,24 +1,173 @@
+/* Paleta de Cores */
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  --background-color: #fdfbf7; /* Branco quase pêssego */
+  --card-background-color: #ffffff;
+  --text-primary-color: #3d3d3d; /* Cinza escuro */
+  --text-secondary-color: #7a7a7a; /* Cinza médio */
+  --accent-color: #ff9a62;      /* Laranja suave */
+  --accent-hover-color: #ff7f36;  /* Laranja mais forte para hover */
+  --danger-color: #e74c3c;
+  --danger-hover-color: #c0392b;
+  --border-color: #f0e9e9;
+  --shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
 }
-body { margin: 0; display: flex; place-items: center; min-width: 320px; min-height: 100vh; }
-#root { max-width: 1280px; margin: 0 auto; padding: 2rem; text-align: center; }
-.container { background-color: #2f2f2f; padding: 2rem; border-radius: 8px; }
-main { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem; text-align: left;}
-.form-container, .list-container { background-color: #3a3a3a; padding: 1.5rem; border-radius: 8px; }
-.form-group { margin-bottom: 1rem; }
-.form-group label { display: block; margin-bottom: 0.5rem; }
-.form-group input, .form-group select { width: 100%; padding: 0.5rem; border-radius: 4px; border: 1px solid #555; background-color: #444; color: white; box-sizing: border-box;}
-button { border-radius: 8px; border: 1px solid transparent; padding: 0.6em 1.2em; font-size: 1em; font-weight: 500; font-family: inherit; background-color: #1a1a1a; cursor: pointer; transition: border-color 0.25s;}
-button:hover { border-color: #646cff; }
-button:disabled { background-color: #555; cursor: not-allowed; }
-.list-container ul { list-style: none; padding: 0; }
-.list-container li { background-color: #444; padding: 1rem; margin-bottom: 0.5rem; border-radius: 4px; display: flex; justify-content: space-between; align-items: center;}
-.delete-btn { background-color: #b92e2e; }
-.delete-btn:hover { border-color: #ff6b6b; }
-.error-message { color: #ff6b6b; background-color: #442c2c; padding: 1rem; border-radius: 8px; margin-top: 1rem;}
+
+/* Estilos Globais */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--background-color);
+  color: var(--text-primary-color);
+}
+
+.container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+header h1 {
+  text-align: center;
+  font-size: 2.5rem;
+  color: var(--text-primary-color);
+  margin-bottom: 2rem;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.card {
+  background-color: var(--card-background-color);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+h2 {
+  margin-top: 0;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+/* Formulário */
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.form-group label {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary-color);
+}
+
+.form-group input, .form-group select {
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: #fcfcfc;
+  color: var(--text-primary-color);
+  box-sizing: border-box;
+  font-size: 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus, .form-group select:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  box-shadow: 0 0 0 3px rgba(255, 154, 98, 0.25);
+}
+
+/* Botões */
+button {
+  width: 100%;
+  border-radius: 8px;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s, transform 0.1s;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+button:not(:disabled):active {
+  transform: translateY(1px);
+}
+
+.btn-primary {
+  background-color: var(--accent-color);
+  color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background-color: var(--accent-hover-color);
+}
+
+.btn-delete {
+  background-color: var(--danger-color);
+  color: white;
+  width: auto; /* Para não ocupar a largura toda */
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+}
+
+.btn-delete:hover:not(:disabled) {
+  background-color: var(--danger-hover-color);
+}
+
+/* Lista de Sessões */
+.session-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.session-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.session-card-info {
+  text-align: left;
+}
+
+.session-card-info p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.filme-titulo {
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.sala-info, .horario-info {
+  color: var(--text-secondary-color);
+  font-size: 0.9rem;
+}
+
+.error-message {
+  color: var(--danger-color);
+  background-color: #fdecea;
+  padding: 1rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 1rem;
+}

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api, type Filme, type Sessao, type SessaoPayload } from './services/api';
-import './App.css';
+import './App.css'; // Vamos usar App.css em vez de index.css para o estilo
 
 function App() {
   const [sessoes, setSessoes] = useState<Sessao[]>([]);
@@ -27,14 +27,13 @@ function App() {
       
       const filmesDisponiveis = filmesData.filter(filme => filme.disponivel);
       setFilmes(filmesDisponiveis);
-      setSessoes(sessoesData);
+      setSessoes(sessoesData.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())); // Ordena as sessões mais novas primeiro
       
-      // CORREÇÃO AQUI: Usa .id em vez de ._id
       if (filmesDisponiveis.length > 0) {
         setSelectedFilmeId(filmesDisponiveis[0].id);
       }
     } catch (err) {
-      setError('Falha ao carregar dados. Verifique as URLs das APIs e se os serviços estão no ar.');
+      setError('Falha ao carregar dados. Verifique se as APIs estão no ar.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -63,15 +62,9 @@ function App() {
       setError('Por favor, selecione um filme.');
       return;
     }
-
     setLoading(true);
     setError(null);
-
-    const payload: SessaoPayload = {
-      ...formData,
-      filmeId: selectedFilmeId,
-    };
-
+    const payload: SessaoPayload = { ...formData, filmeId: selectedFilmeId };
     try {
       await api.createSessao(payload);
       alert('Sessão criada com sucesso!');
@@ -86,7 +79,6 @@ function App() {
   
   const handleDelete = async (id: string) => {
     if (!window.confirm('Tem certeza que deseja deletar esta sessão?')) return;
-    
     setLoading(true);
     try {
       await api.deleteSessao(id);
@@ -109,7 +101,7 @@ function App() {
       {error && <p className="error-message">{error}</p>}
       
       <main>
-        <div className="form-container">
+        <div className="form-container card">
           <h2>Criar Nova Sessão</h2>
           <form onSubmit={handleSubmit}>
             <div className="form-group">
@@ -117,21 +109,17 @@ function App() {
               <select name="selectedFilmeId" id="selectedFilmeId" value={selectedFilmeId} onChange={handleFormChange} required>
                 <option value="" disabled>Selecione um filme</option>
                 {filmes.map(filme => (
-                  // CORREÇÃO FINAL AQUI: Usa .id em vez de ._id
-                  <option key={filme.id} value={filme.id}>
-                    {filme.titulo}
-                  </option>
+                  <option key={filme.id} value={filme.id}>{filme.titulo}</option>
                 ))}
               </select>
             </div>
-            {/* O resto do formulário não precisa de mudanças */}
             <div className="form-group">
               <label htmlFor="dataHora">Data e Hora</label>
               <input type="datetime-local" id="dataHora" name="dataHora" value={formData.dataHora} onChange={handleFormChange} required />
             </div>
             <div className="form-group">
               <label htmlFor="sala">Sala</label>
-              <input type="text" id="sala" name="sala" value={formData.sala} onChange={handleFormChange} required placeholder="Ex: Sala 5" />
+              <input type="text" id="sala" name="sala" value={formData.sala} onChange={handleFormChange} required placeholder="Ex: Sala 5 IMAX" />
             </div>
             <div className="form-group">
               <label htmlFor="preco">Preço</label>
@@ -139,9 +127,10 @@ function App() {
             </div>
             <div className="form-group">
               <label htmlFor="assentosDisponiveis">Assentos Disponíveis</label>
-              <input type="number" id="assentosDisponiveis" name="assentosDisponiveis" onChange={handleFormChange} required />
+              {/* CORREÇÃO DO BUG: Adicionando o atributo value que faltava */}
+              <input type="number" id="assentosDisponiveis" name="assentosDisponiveis" value={formData.assentosDisponiveis} onChange={handleFormChange} required />
             </div>
-            <button type="submit" disabled={loading}>
+            <button type="submit" disabled={loading} className="btn-primary">
               {loading ? 'Criando...' : 'Criar Sessão'}
             </button>
           </form>
@@ -150,18 +139,19 @@ function App() {
         <div className="list-container">
           <h2>Sessões Agendadas</h2>
           {loading && sessoes.length === 0 && <p>Carregando...</p>}
-          <ul>
+          <div className="session-list">
             {sessoes.map(sessao => (
-              <li key={sessao._id}>
-                <div className="session-details">
-                  <strong>{sessao.filme?.titulo || `Filme (ID: ${sessao.filmeId})`}</strong>
-                  <span>Sala: {sessao.sala}</span>
-                  <span>{new Date(sessao.dataHora).toLocaleString('pt-BR')}</span>
+              <div key={sessao._id} className="session-card card">
+                {/* ESTRUTURA MELHORADA: Exibindo os dados de forma mais clara */}
+                <div className="session-card-info">
+                  <p className="filme-titulo">{sessao.filme?.titulo || `Filme (ID: ${sessao.filmeId})`}</p>
+                  <p className="sala-info">Sala: {sessao.sala}</p>
+                  <p className="horario-info">{new Date(sessao.dataHora).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</p>
                 </div>
-                <button className="delete-btn" onClick={() => handleDelete(sessao._id)} disabled={loading}>Deletar</button>
-              </li>
+                <button className="btn-delete" onClick={() => handleDelete(sessao._id)} disabled={loading}>Deletar</button>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </main>
     </div>

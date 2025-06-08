@@ -16,7 +16,9 @@ export interface Sessao {
   sala: string;
   preco: number;
   assentosDisponiveis: number;
-  filme?: Filme; 
+  filme?: Filme;
+  createdAt: string; // <-- Propriedade adicionada
+  updatedAt: string; // <-- Propriedade adicionada
 }
 
 export interface SessaoPayload {
