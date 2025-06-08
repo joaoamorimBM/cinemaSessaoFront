@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { api, type Filme, type Sessao, type SessaoPayload } from './services/api';
-import './App.css'; // Vamos usar App.css em vez de index.css para o estilo
+import './App.css';
 
 function App() {
   const [sessoes, setSessoes] = useState<Sessao[]>([]);
@@ -27,13 +27,13 @@ function App() {
       
       const filmesDisponiveis = filmesData.filter(filme => filme.disponivel);
       setFilmes(filmesDisponiveis);
-      setSessoes(sessoesData.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())); // Ordena as sessões mais novas primeiro
+      setSessoes(sessoesData.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
       
       if (filmesDisponiveis.length > 0) {
         setSelectedFilmeId(filmesDisponiveis[0].id);
       }
     } catch (err) {
-      setError('Falha ao carregar dados. Verifique se as APIs estão no ar.');
+      setError('Falha ao carregar dados. Verifique as URLs das APIs e se os serviços estão no ar.');
       console.error(err);
     } finally {
       setLoading(false);
@@ -64,7 +64,14 @@ function App() {
     }
     setLoading(true);
     setError(null);
-    const payload: SessaoPayload = { ...formData, filmeId: selectedFilmeId };
+
+    // CORREÇÃO FINAL DO FUSO HORÁRIO
+    const payload: SessaoPayload = {
+      ...formData,
+      filmeId: selectedFilmeId,
+      dataHora: new Date(formData.dataHora).toISOString(),
+    };
+
     try {
       await api.createSessao(payload);
       alert('Sessão criada com sucesso!');
@@ -127,7 +134,6 @@ function App() {
             </div>
             <div className="form-group">
               <label htmlFor="assentosDisponiveis">Assentos Disponíveis</label>
-              {/* CORREÇÃO DO BUG: Adicionando o atributo value que faltava */}
               <input type="number" id="assentosDisponiveis" name="assentosDisponiveis" value={formData.assentosDisponiveis} onChange={handleFormChange} required />
             </div>
             <button type="submit" disabled={loading} className="btn-primary">
@@ -138,19 +144,19 @@ function App() {
 
         <div className="list-container">
           <h2>Sessões Agendadas</h2>
-          {loading && sessoes.length === 0 && <p>Carregando...</p>}
           <div className="session-list">
-            {sessoes.map(sessao => (
-              <div key={sessao._id} className="session-card card">
-                {/* ESTRUTURA MELHORADA: Exibindo os dados de forma mais clara */}
-                <div className="session-card-info">
-                  <p className="filme-titulo">{sessao.filme?.titulo || `Filme (ID: ${sessao.filmeId})`}</p>
-                  <p className="sala-info">Sala: {sessao.sala}</p>
-                  <p className="horario-info">{new Date(sessao.dataHora).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</p>
+            {loading && sessoes.length === 0 ? <p>Carregando...</p> :
+              sessoes.map(sessao => (
+                <div key={sessao._id} className="session-card card">
+                  <div className="session-card-info">
+                    <p className="filme-titulo">{sessao.filme?.titulo || `Filme (ID: ${sessao.filmeId})`}</p>
+                    <p className="sala-info">Sala: {sessao.sala}</p>
+                    <p className="horario-info">{new Date(sessao.dataHora).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}</p>
+                  </div>
+                  <button className="btn-delete" onClick={() => handleDelete(sessao._id)} disabled={loading}>Deletar</button>
                 </div>
-                <button className="btn-delete" onClick={() => handleDelete(sessao._id)} disabled={loading}>Deletar</button>
-              </div>
-            ))}
+              ))
+            }
           </div>
         </div>
       </main>
