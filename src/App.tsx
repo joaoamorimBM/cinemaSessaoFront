@@ -3,6 +3,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { api, type Filme, type Sessao, type SessaoPayload } from './services/api';
 import './App.css';
 
+// TESTE PARA FORÇAR ATUALIZAÇÃO DO COMMIT
+
 function App() {
   const [sessoes, setSessoes] = useState<Sessao[]>([]);
   const [filmes, setFilmes] = useState<Filme[]>([]);
