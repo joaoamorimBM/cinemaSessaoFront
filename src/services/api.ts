@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-// Interfaces para os dados
+// --- Interfaces (Tipos de Dados) ---
 export interface Filme {
   _id: string;
   titulo: string;
@@ -9,7 +9,7 @@ export interface Filme {
 }
 
 export interface Sessao {
-  _id:string;
+  _id: string;
   filmeId: string;
   dataHora: string;
   sala: string;
@@ -26,20 +26,22 @@ export interface SessaoPayload {
   assentosDisponiveis: number;
 }
 
-// Instâncias do Axios
+// --- Configuração das APIs ---
+// A baseURL deve ser APENAS o endereço principal do serviço.
 const sessaoApi = axios.create({
-  baseURL: import.meta.env.VITE_SESSAO_API_URL
+  baseURL: import.meta.env.VITE_SESSAO_API_URL 
 });
 
 const filmeApi = axios.create({
-  baseURL: import.meta.env.VITE_FILME_API_URL
+  baseURL: import.meta.env.VITE_FILME_API_URL 
 });
 
-// Funções para interagir com as APIs
+// --- Funções de API ---
 export const api = {
-  // CORREÇÃO AQUI: Usando a rota correta para buscar os filmes disponíveis
+  // --- Funções da API de Filmes ---
   getFilmes: async (): Promise<Filme[]> => {
     try {
+      // O caminho completo da rota é especificado aqui.
       const response = await filmeApi.get<Filme[]>('/filmes/disponiveis');
       return response.data;
     } catch (error) {
@@ -48,17 +50,21 @@ export const api = {
     }
   },
   
+  // --- Funções da API de Sessões (CORRIGIDAS) ---
   getSessoes: async (): Promise<Sessao[]> => {
+    // A rota completa é /sessoes
     const response = await sessaoApi.get<Sessao[]>('/sessoes');
     return response.data;
   },
 
   createSessao: async (data: SessaoPayload): Promise<Sessao> => {
+    // A rota completa é /sessoes
     const response = await sessaoApi.post<Sessao>('/sessoes', data);
     return response.data;
   },
 
   deleteSessao: async (id: string): Promise<void> => {
+    // A rota completa é /sessoes/:id
     await sessaoApi.delete(`/sessoes/${id}`);
   }
 };
