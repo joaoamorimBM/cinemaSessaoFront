@@ -29,8 +29,9 @@ function App() {
       setFilmes(filmesDisponiveis);
       setSessoes(sessoesData);
       
+      // CORREÇÃO AQUI: Usa .id em vez de ._id
       if (filmesDisponiveis.length > 0) {
-        setSelectedFilmeId(filmesDisponiveis[0]._id);
+        setSelectedFilmeId(filmesDisponiveis[0].id);
       }
     } catch (err) {
       setError('Falha ao carregar dados. Verifique as URLs das APIs e se os serviços estão no ar.');
@@ -58,13 +59,6 @@ function App() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // ==================================================================
-    // LINHA DE TESTE ADICIONADA AQUI
-    // Este alerta vai nos mostrar o valor exato antes de ser enviado.
-    alert(`ID do filme que será enviado para o backend: ${selectedFilmeId}`);
-    // ==================================================================
-
     if (!selectedFilmeId) {
       setError('Por favor, selecione um filme.');
       return;
@@ -95,14 +89,14 @@ function App() {
     
     setLoading(true);
     try {
-        await api.deleteSessao(id);
-        alert('Sessão deletada com sucesso!');
-        loadInitialData();
+      await api.deleteSessao(id);
+      alert('Sessão deletada com sucesso!');
+      loadInitialData();
     } catch (err) {
-        setError('Falha ao deletar sessão.');
-        console.error(err);
+      setError('Falha ao deletar sessão.');
+      console.error(err);
     } finally {
-        setLoading(false);
+      setLoading(false);
     }
   }
 
@@ -123,12 +117,14 @@ function App() {
               <select name="selectedFilmeId" id="selectedFilmeId" value={selectedFilmeId} onChange={handleFormChange} required>
                 <option value="" disabled>Selecione um filme</option>
                 {filmes.map(filme => (
-                  <option key={filme._id} value={filme._id}>
+                  // CORREÇÃO FINAL AQUI: Usa .id em vez de ._id
+                  <option key={filme.id} value={filme.id}>
                     {filme.titulo}
                   </option>
                 ))}
               </select>
             </div>
+            {/* O resto do formulário não precisa de mudanças */}
             <div className="form-group">
               <label htmlFor="dataHora">Data e Hora</label>
               <input type="datetime-local" id="dataHora" name="dataHora" value={formData.dataHora} onChange={handleFormChange} required />

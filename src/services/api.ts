@@ -1,12 +1,14 @@
 import axios from 'axios';
 
-// Interfaces
+// CORREÇÃO AQUI: Trocamos _id por id na interface do Filme
 export interface Filme {
-  _id: string;
+  id: string; // Antes era _id
   titulo: string;
   disponivel: boolean;
   imagem?: string;
 }
+
+// A interface da Sessão continua usando _id, pois é assim que seu backend de sessões a retorna.
 export interface Sessao {
   _id: string;
   filmeId: string;
@@ -14,8 +16,9 @@ export interface Sessao {
   sala: string;
   preco: number;
   assentosDisponiveis: number;
-  filme?: Filme;
+  filme?: Filme; 
 }
+
 export interface SessaoPayload {
   filmeId: string;
   dataHora: string;
@@ -24,7 +27,6 @@ export interface SessaoPayload {
   assentosDisponiveis: number;
 }
 
-// Configuração das APIs
 const sessaoApi = axios.create({
   baseURL: import.meta.env.VITE_SESSAO_API_URL
 });
@@ -32,17 +34,10 @@ const filmeApi = axios.create({
   baseURL: import.meta.env.VITE_FILME_API_URL
 });
 
-// Funções de API
 export const api = {
-  // CORREÇÃO FINAL: Usando a rota /filmes/disponiveis
   getFilmes: async (): Promise<Filme[]> => {
-    try {
-      const response = await filmeApi.get<Filme[]>('/filmes/disponiveis');
-      return response.data;
-    } catch (error) {
-        console.error("Erro ao buscar a lista de filmes disponíveis.", error);
-        throw error;
-    }
+    const response = await filmeApi.get<Filme[]>('/filmes/disponiveis');
+    return response.data;
   },
   
   getSessoes: async (): Promise<Sessao[]> => {
