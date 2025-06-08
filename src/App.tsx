@@ -1,9 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-// CORREÇÃO 1: Adicionando a palavra-chave "type" para as interfaces
 import { api, type Filme, type Sessao, type SessaoPayload } from './services/api';
 import './App.css';
-
-// TESTE PARA FORÇAR ATUALIZAÇÃO DO COMMIT
 
 function App() {
   const [sessoes, setSessoes] = useState<Sessao[]>([]);
@@ -61,6 +58,13 @@ function App() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // ==================================================================
+    // LINHA DE TESTE ADICIONADA AQUI
+    // Este alerta vai nos mostrar o valor exato antes de ser enviado.
+    alert(`ID do filme que será enviado para o backend: ${selectedFilmeId}`);
+    // ==================================================================
+
     if (!selectedFilmeId) {
       setError('Por favor, selecione um filme.');
       return;
@@ -139,7 +143,7 @@ function App() {
             </div>
             <div className="form-group">
               <label htmlFor="assentosDisponiveis">Assentos Disponíveis</label>
-              <input type="number" id="assentosDisponiveis" name="assentosDisponiveis" value={formData.assentosDisponiveis} onChange={handleFormChange} required />
+              <input type="number" id="assentosDisponiveis" name="assentosDisponiveis" onChange={handleFormChange} required />
             </div>
             <button type="submit" disabled={loading}>
               {loading ? 'Criando...' : 'Criar Sessão'}
@@ -153,7 +157,6 @@ function App() {
           <ul>
             {sessoes.map(sessao => (
               <li key={sessao._id}>
-                {/* CORREÇÃO 2: Exibindo o título do filme que agora vem da API */}
                 <div className="session-details">
                   <strong>{sessao.filme?.titulo || `Filme (ID: ${sessao.filmeId})`}</strong>
                   <span>Sala: {sessao.sala}</span>
