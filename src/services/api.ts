@@ -40,15 +40,16 @@ const filmeApi = axios.create({
 // Funções para interagir com as APIs
 export const api = {
   getFilmes: async (): Promise<Filme[]> => {
-    // A API de filmes parece ter a rota /filmes e /filmes/listar. Vamos usar a que for mais apropriada.
-    // Baseado no seu service, a API tem uma rota `/filmes` que lista todos.
     try {
-      const response = await filmeApi.get<Filme[]>('/');
+      // Analisando a estrutura de rotas do backend, a rota mais provável
+      // para listar todos os filmes é /filmes/listar ou /filmes/listar/todos.
+      // Vamos tentar /filmes/listar primeiro.
+      const response = await filmeApi.get<Filme[]>('/listar/todos'); // A baseURL já é .../filmes
       return response.data;
     } catch (error) {
-      console.error("Tentando rota alternativa /listar/todos");
-      const response = await filmeApi.get<Filme[]>('/listar/todos');
-      return response.data;
+        console.error("Erro ao buscar a lista de filmes. Verifique o endpoint na API de Filmes.", error);
+        // Lança o erro para que o componente App.tsx possa tratá-lo.
+        throw error;
     }
   },
   
