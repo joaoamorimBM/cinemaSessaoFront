@@ -1,14 +1,12 @@
 import axios from 'axios';
 
-// Interface do Filme (como esperado pela API de Filmes)
+// Interfaces (não mudam)
 export interface Filme {
   _id: string;
   titulo: string;
   disponivel: boolean;
-  imagem?: string; // imagem do poster, etc.
+  imagem?: string;
 }
-
-// Interface da Sessão ATUALIZADA
 export interface Sessao {
   _id: string;
   filmeId: string;
@@ -16,10 +14,8 @@ export interface Sessao {
   sala: string;
   preco: number;
   assentosDisponiveis: number;
-  filme?: Filme; // <-- A MUDANÇA ESTÁ AQUI! O filme agora pode vir junto.
+  filme?: Filme;
 }
-
-// DTO para criar uma nova sessão (não muda)
 export interface SessaoPayload {
   filmeId: string;
   dataHora: string;
@@ -28,22 +24,20 @@ export interface SessaoPayload {
   assentosDisponiveis: number;
 }
 
-// Configuração das instâncias do Axios (não muda)
+// MUDANÇA AQUI: A baseURL agora é apenas o domínio principal de cada serviço
 const sessaoApi = axios.create({
-  baseURL: `${import.meta.env.VITE_SESSAO_API_URL}/sessoes`
+  baseURL: import.meta.env.VITE_SESSAO_API_URL 
 });
-
 const filmeApi = axios.create({
-  baseURL: `${import.meta.env.VITE_FILME_API_URL}/filmes`
+  baseURL: import.meta.env.VITE_FILME_API_URL 
 });
 
 // Funções para interagir com as APIs
 export const api = {
+  // MUDANÇA AQUI: Especificamos o caminho completo '/filmes'
   getFilmes: async (): Promise<Filme[]> => {
     try {
-      // A baseURL da filmeApi já é ".../filmes".
-      // A rota para listar todos é simplesmente a raiz dessa baseURL.
-      const response = await filmeApi.get<Filme[]>('/'); 
+      const response = await filmeApi.get<Filme[]>('/filmes');
       return response.data;
     } catch (error) {
         console.error("Erro ao buscar a lista de filmes.", error);
@@ -51,18 +45,18 @@ export const api = {
     }
   },
   
-  // A chamada não muda, mas o TIPO de retorno agora é a nossa nova interface Sessao
+  // MUDANÇA AQUI: Especificamos o caminho completo '/sessoes'
   getSessoes: async (): Promise<Sessao[]> => {
-    const response = await sessaoApi.get<Sessao[]>('/');
+    const response = await sessaoApi.get<Sessao[]>('/sessoes');
     return response.data;
   },
 
   createSessao: async (data: SessaoPayload): Promise<Sessao> => {
-    const response = await sessaoApi.post<Sessao>('/', data);
+    const response = await sessaoApi.post<Sessao>('/sessoes', data);
     return response.data;
   },
 
   deleteSessao: async (id: string): Promise<void> => {
-    await sessaoApi.delete(`/${id}`);
+    await sessaoApi.delete(`/sessoes/${id}`);
   }
 };
