@@ -1,14 +1,15 @@
 import axios from 'axios';
 
-// Interfaces (não mudam)
+// Interfaces para os dados
 export interface Filme {
   _id: string;
   titulo: string;
   disponivel: boolean;
   imagem?: string;
 }
+
 export interface Sessao {
-  _id: string;
+  _id:string;
   filmeId: string;
   dataHora: string;
   sala: string;
@@ -16,6 +17,7 @@ export interface Sessao {
   assentosDisponiveis: number;
   filme?: Filme;
 }
+
 export interface SessaoPayload {
   filmeId: string;
   dataHora: string;
@@ -24,28 +26,28 @@ export interface SessaoPayload {
   assentosDisponiveis: number;
 }
 
-// MUDANÇA AQUI: A baseURL agora é apenas o domínio principal de cada serviço
+// Instâncias do Axios
 const sessaoApi = axios.create({
-  baseURL: import.meta.env.VITE_SESSAO_API_URL 
+  baseURL: import.meta.env.VITE_SESSAO_API_URL
 });
+
 const filmeApi = axios.create({
-  baseURL: import.meta.env.VITE_FILME_API_URL 
+  baseURL: import.meta.env.VITE_FILME_API_URL
 });
 
 // Funções para interagir com as APIs
 export const api = {
-  // MUDANÇA AQUI: Especificamos o caminho completo '/filmes'
+  // CORREÇÃO AQUI: Usando a rota correta para buscar os filmes disponíveis
   getFilmes: async (): Promise<Filme[]> => {
     try {
-      const response = await filmeApi.get<Filme[]>('/filmes');
+      const response = await filmeApi.get<Filme[]>('/filmes/disponiveis');
       return response.data;
     } catch (error) {
-        console.error("Erro ao buscar a lista de filmes.", error);
+        console.error("Erro ao buscar a lista de filmes disponíveis.", error);
         throw error;
     }
   },
   
-  // MUDANÇA AQUI: Especificamos o caminho completo '/sessoes'
   getSessoes: async (): Promise<Sessao[]> => {
     const response = await sessaoApi.get<Sessao[]>('/sessoes');
     return response.data;
